@@ -1,21 +1,11 @@
-use std::{
-    fs,
-    io::{self, BufRead, BufReader},
-    path::Path,
-    process::{exit, Command, Stdio},
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
-    thread,
-    time::Duration,
-};
-use async_std::{task, prelude::*};
-use tokio::signal::unix::{signal, SignalKind};
+mod util;
 
-use uuid::Uuid;
+async fn main() {
+    let url = "https://api.papermc.io/v2/projects/velocity/versions/3.3.0-SNAPSHOT/builds/389/downloads/velocity-3.3.0-SNAPSHOT-389.jar";
+    let _ = util::download(url).await;
+}
 
-fn main() {
+/*fn main() {
     let keep_running = Arc::new(AtomicBool::new(true));
 
     task::block_on(async {
@@ -124,4 +114,4 @@ fn start(jar_file_name: &str, working_dir: &str, keep_running: Arc<AtomicBool>) 
         }
         keep_running.store(false, Ordering::Relaxed);
     });
-}
+}*/
