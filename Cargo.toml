@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 reqwest = { version = "0.12.4", features = ["blocking", "json"] }
-tokio = { version = "1.37.0" }
+tokio = { version = "1.37.0", features = ["macros", "rt-multi-thread"] }
 
 [dependencies.uuid]
 version = "1.8.0"

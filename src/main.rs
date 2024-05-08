@@ -1,8 +1,10 @@
-mod util;
+mod downloader;
 
+#[tokio::main]
 async fn main() {
+    let name = "velocity-3.3.0.jar";
     let url = "https://api.papermc.io/v2/projects/velocity/versions/3.3.0-SNAPSHOT/builds/389/downloads/velocity-3.3.0-SNAPSHOT-389.jar";
-    let _ = util::download(url).await;
+    let _ = downloader::download(name, url).await;
 }
 
 /*fn main() {
