@@ -36,10 +36,6 @@ impl CloudTerminal {
         Ok(())
     }
 
-    pub fn change_to_another_terminal(&self, other: &CloudTerminal) {
-        println!("Switching to terminal: {}", other.name);
-    }
-
     pub fn get_current_terminal(&self) -> &CloudTerminal {
         self
     }
