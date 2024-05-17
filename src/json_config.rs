@@ -1,46 +1,77 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fs::File;
-use std::io::{Error, ErrorKind, Read, Write};
+use serde_json::{json, Value, Map};
+use std::fs::{self, File};
+use std::io::{self, BufRead, BufReader, Write};
+use std::path::Path;
 
-#[derive(Serialize, Deserialize)]
-struct JsonConfig {
-    file_path: String,
-    values: HashMap<String, String>,
-    auto_save: bool,
+pub struct JsonConfig {
+    config_path: String,
+    config_name: String,
+    json_object: Map<String, Value>,
 }
 
 impl JsonConfig {
-    fn get_value(&self, key: &str) -> Option<&String> {
-        self.values.get(key)
+    pub fn new(path: &str, config_name: &str) -> Self {
+        let config_name = format!("{}.json", config_name);
+        let config_path = path.to_string();
+        let full_path = format!("{}/{}", path, config_name);
+
+        if !Path::new(path).exists() {
+            fs::create_dir_all(path).expect("Failed to create directory");
+        }
+
+        let json_object = if !Path::new(&full_path).exists() {
+            let file = File::create(&full_path).expect("Failed to create config file");
+            drop(file);
+            let json_object = Map::new();
+            let config = JsonConfig {
+                config_path: config_path.clone(),
+                config_name: config_name.clone(),
+                json_object: json_object.clone(),
+            };
+            config.save();
+            json_object
+        } else {
+            let config_json = Self::read_file(&full_path);
+            serde_json::from_str(&config_json).unwrap_or_else(|_| Map::new())
+        };
+
+        JsonConfig {
+            config_path,
+            config_name,
+            json_object,
+        }
     }
 
-    fn set_value(&mut self, key: String, value: String) {
-        self.values.insert(key, value);
+    pub fn set(&mut self, key: &str, value: String) {
+        self.json_object.insert(key.to_string(), serde_json::Value::String(value));
+        self.save();
     }
 
-    fn file_path(&self) -> &str {
-        &self.file_path
+    pub fn remove(&mut self, key: &str) {
+        self.json_object.remove(key);
+        self.save();
     }
 
-    fn auto_save(&self) -> bool {
-        self.auto_save
+    pub fn get(&self, key: &str) -> Option<&Value> {
+        self.json_object.get(key)
     }
-}
 
-impl JsonConfig {
-    fn from_file(file_path: &str) -> Result<Self, Error> {
-        let mut file = File::open(file_path)?;
-        let mut contents = String::new();
-        file.read_to_string(&mut contents)?;
-
-        serde_json::from_str(&contents).map_err(|e| Error::new(ErrorKind::Other, e))
+    pub fn add_default(&mut self, key: &str, value: String) {
+        if self.get(key).is_none() {
+            self.set(key, value);
+        }
     }
-    
-    fn to_file(&self, file_path: &str) -> Result<(), Error> {
-        let mut file = File::create(file_path)?;
-        let json = serde_json::to_string_pretty(self)?;
-        file.write_all(json.as_bytes())?;
-        Ok(())
+
+    fn save(&self) {
+        let full_path = format!("{}/{}", self.config_path, self.config_name);
+        let json_string = serde_json::to_string(&self.json_object).expect("Failed to serialize JSON");
+        let mut file = File::create(&full_path).expect("Failed to open config file for writing");
+        file.write_all(json_string.as_bytes()).expect("Failed to write JSON to file");
+    }
+
+    fn read_file(file_path: &str) -> String {
+        let file = File::open(file_path).expect("Failed to open config file for reading");
+        let reader = BufReader::new(file);
+        reader.lines().collect::<Result<String, _>>().expect("Failed to read config file")
     }
 }

@@ -17,7 +17,7 @@ impl CloudTerminal {
     }
 
     pub fn readline(&self) -> String {
-        print!("{}> ", self.name);
+        print!("RustnessCloud » ");
         io::stdout().flush().unwrap();
 
         let mut input = String::new();
