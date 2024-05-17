@@ -1,4 +1,4 @@
-use std::{io::Result, ptr::null};
+use std::io::Result;
 
 mod cloud_terminal;
 use cloud_terminal::CloudTerminal;
