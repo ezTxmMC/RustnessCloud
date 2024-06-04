@@ -31,9 +31,8 @@ impl CloudTerminal {
         println!("{}", message);
     }
 
-    pub fn clear(&self) -> Result<()> {
-        execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0))?;
-        Ok(())
+    pub fn clear(&self) {
+        execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0));
     }
 
     pub fn get_current_terminal(&self) -> &CloudTerminal {

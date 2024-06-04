@@ -1,11 +1,11 @@
-use std::io::Result;
-
 mod cloud_terminal;
-use cloud_terminal::CloudTerminal;
-use json_config::JsonConfig;
+mod database;
 mod json_config;
 
-fn main() -> Result<()> {
+use cloud_terminal::CloudTerminal;
+use json_config::JsonConfig;
+
+fn main() {
     let mut config = JsonConfig::new("data", "launch");
 
     let main_terminal = CloudTerminal::new("main");
@@ -31,11 +31,11 @@ fn main() -> Result<()> {
         match current_terminal_name {
             "main" => {
                 if input == "clear" || input == "cls" {
-                    current_terminal.clear()?;
+                    current_terminal.clear();
                     continue;
                 }
                 if input == "shutdown" {
-                    return Ok(());
+                    break;
                 }
             }
             "setup" => {
@@ -62,7 +62,7 @@ fn main() -> Result<()> {
                     _ => {
                         current_terminal
                             .writeline("Setup has been cancelled caused an unknown error.");
-                        return Ok(());
+                        break;
                     }
                 }
             }
