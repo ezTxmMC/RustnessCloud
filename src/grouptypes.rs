@@ -6,7 +6,6 @@ enum ServiceType {
 
 enum ProxySoftwareType {
     BUNGEECORD,
-    FLUX,
     VELOCITY
 }
 
@@ -14,7 +13,8 @@ enum ServerSoftwareType {
     SPIGOT,
     PAPER,
     PURPUR,
-    PUFFERFISH
+    FOLIA,
+    MINESTOM
 }
 
 enum SupportedVersions {
