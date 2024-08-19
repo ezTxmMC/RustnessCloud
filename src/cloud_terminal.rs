@@ -3,7 +3,7 @@ use crossterm::{
     execute,
     terminal::{Clear, ClearType},
 };
-use std::io::{self, Result, Write};
+use std::io::{self, Write};
 
 pub struct CloudTerminal {
     pub name: String,

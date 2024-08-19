@@ -1,6 +1,6 @@
-use serde_json::{json, Value, Map};
+use serde_json::{Map, Value};
 use std::fs::{self, File};
-use std::io::{self, BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 
 pub struct JsonConfig {
@@ -43,7 +43,8 @@ impl JsonConfig {
     }
 
     pub fn set(&mut self, key: &str, value: String) {
-        self.json_object.insert(key.to_string(), serde_json::Value::String(value));
+        self.json_object
+            .insert(key.to_string(), serde_json::Value::String(value));
         self.save();
     }
 
@@ -64,14 +65,19 @@ impl JsonConfig {
 
     fn save(&self) {
         let full_path = format!("{}/{}", self.config_path, self.config_name);
-        let json_string = serde_json::to_string(&self.json_object).expect("Failed to serialize JSON");
+        let json_string =
+            serde_json::to_string(&self.json_object).expect("Failed to serialize JSON");
         let mut file = File::create(&full_path).expect("Failed to open config file for writing");
-        file.write_all(json_string.as_bytes()).expect("Failed to write JSON to file");
+        file.write_all(json_string.as_bytes())
+            .expect("Failed to write JSON to file");
     }
 
     fn read_file(file_path: &str) -> String {
         let file = File::open(file_path).expect("Failed to open config file for reading");
         let reader = BufReader::new(file);
-        reader.lines().collect::<Result<String, _>>().expect("Failed to read config file")
+        reader
+            .lines()
+            .collect::<Result<String, _>>()
+            .expect("Failed to read config file")
     }
 }
