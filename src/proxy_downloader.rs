@@ -1,6 +1,6 @@
 fn downloadBungeecord() {
     let name = "bungeecord.jar";
-    let url = "";
+    let url = "https://ci.md-5.net/job/BungeeCord/lastSuccessfulBuild/artifact/bootstrap/target/BungeeCord.jar";
     let _ = downloader::download(name, url).await;
 }
 
