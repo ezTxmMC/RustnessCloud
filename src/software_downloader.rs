@@ -17,7 +17,7 @@ fn downloadPurpur(supportedVersions: SupportedVersions) {
 }
 
 fn downloadFolia(supportedVersions: SupportedVersions) {
-    let name = "pufferfish.jar";
+    let name = "folia.jar";
     let url = "https://api.papermc.io/v2/projects/folia/versions/1.20.6/builds/5/downloads/folia-1.20.6-5.jar";
     let _ = downloader::download(name, url).await;
 }
