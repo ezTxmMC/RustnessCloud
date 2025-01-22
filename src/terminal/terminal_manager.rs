@@ -1,4 +1,5 @@
-use std::fmt::format;
+use std::fs;
+use std::path::Path;
 use serde_json::Number;
 use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
@@ -51,16 +52,19 @@ impl TerminalManager {
                         "create" => {
                             // create group lobby
                             if args.len() < 2 {
-                                current_terminal.write_line("Too few arguments.");
+                                current_terminal.write_line("\
+                                create group proxy\n\
+                                create group lobby\n\
+                                create group server"
+                                );
                                 continue;
                             }
                             match args[0] {
                                 "group" => {
                                     match args[1] {
                                         "proxy" => {
-// create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <maintenance> <permission>
                                             if args.len() < 12 {
-                                                current_terminal.write_line("Too few arguments.");
+                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <maintenance> <permission>");
                                                 continue;
                                             }
                                             let mut group_file = JsonConfig::new("groups/proxies", args[2]);
@@ -75,16 +79,63 @@ impl TerminalManager {
                                             group_file.set_integer("port", args[9].parse::<Number>().unwrap());
                                             group_file.set_boolean("maintenance", if (args[10].to_string() == "yes") { true } else { false });
                                             group_file.set_string("permission", args[11].to_string());
+                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
+                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
+                                            }
                                             current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
                                             continue;
                                         }
                                         "lobby" => {
-// create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>
-                                            
+                                            if args.len() < 15 {
+                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                                continue;
+                                            }
+                                            let mut group_file = JsonConfig::new("groups/lobbies", args[2]);
+                                            group_file.set_string("name", args[2].to_string());
+                                            group_file.set_string("templateName", args[2].to_string());
+                                            group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumMemory", args[4].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
+                                            group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
+                                            group_file.set_string("software", args[7].to_string());
+                                            group_file.set_integer("priority", args[8].parse::<Number>().unwrap());
+                                            group_file.set_integer("port", args[9].parse::<Number>().unwrap());
+                                            group_file.set_string("permission", args[10].to_string());
+                                            group_file.set_string("java", args[11].to_string());
+                                            group_file.set_integer("newServiceProcent", args[12].parse::<Number>().unwrap());
+                                            group_file.set_integer("minimumOnlineCount", args[13].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
+                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
+                                            }
+                                            current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
+                                            continue;
                                         }
                                         "server" => {
-// create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>
-
+                                            if args.len() < 15 {
+                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                                continue;
+                                            }
+                                            let mut group_file = JsonConfig::new("groups/servers", args[2]);
+                                            group_file.set_string("name", args[2].to_string());
+                                            group_file.set_string("templateName", args[2].to_string());
+                                            group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumMemory", args[4].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
+                                            group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
+                                            group_file.set_string("software", args[7].to_string());
+                                            group_file.set_integer("priority", args[8].parse::<Number>().unwrap());
+                                            group_file.set_integer("port", args[9].parse::<Number>().unwrap());
+                                            group_file.set_string("permission", args[10].to_string());
+                                            group_file.set_string("java", args[11].to_string());
+                                            group_file.set_integer("newServiceProcent", args[12].parse::<Number>().unwrap());
+                                            group_file.set_integer("minimumOnlineCount", args[13].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
+                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
+                                            }
+                                            current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
+                                            continue;
                                         }
                                         _ => {
                                             current_terminal.write_line(format!("Group {} type doesn't exist.", args[0]).as_str());
