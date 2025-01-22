@@ -10,7 +10,6 @@ pub(crate) enum ProxySoftwareType {
 }
 
 pub(crate) enum ServerSoftwareType {
-    SPIGOT,
     PAPER,
     PURPUR,
     FOLIA,
@@ -22,7 +21,9 @@ pub(crate) enum SupportedVersions {
     V1_20_1,
     V1_20_4,
     V1_20_6,
-    V1_21_1
+    V1_21_1,
+    V1_21_3,
+    V1_21_4,
 }
 
 pub(crate) enum StoreType {

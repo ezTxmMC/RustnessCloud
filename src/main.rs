@@ -1,17 +1,21 @@
 mod terminal {
-    pub(crate) mod cloud_terminal;
+    pub(crate) mod terminal;
     pub(crate) mod terminal_manager;
 }
-mod database;
 mod config {
     pub(crate) mod json_config;
 }
-mod service;
-
-mod groups {
-    mod group;
-    mod grouptypes;
+mod database;
+mod downloader {
+    pub(crate) mod url_downloader;
+    pub(crate) mod proxy_downloader;
+    pub(crate) mod software_downloader;
 }
+mod groups {
+    pub(crate) mod group;
+    pub(crate) mod grouptypes;
+}
+mod service;
 
 use terminal::terminal_manager::TerminalManager;
 use config::json_config::JsonConfig;

@@ -1,11 +1,11 @@
-use super::cloud_terminal::CloudTerminal;
+use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
 
 pub struct TerminalManager {
     pub(crate) launch_config: JsonConfig,
-    pub(crate) main_terminal: CloudTerminal,
-    pub(crate) setup_terminal: CloudTerminal,
-    pub(crate) group_setup_terminal: CloudTerminal,
+    pub(crate) main_terminal: Terminal,
+    pub(crate) setup_terminal: Terminal,
+    pub(crate) group_setup_terminal: Terminal,
 }
 
 impl TerminalManager {
@@ -14,9 +14,9 @@ impl TerminalManager {
         let launch_config = launch_config;
         Self {
             launch_config,
-            main_terminal: CloudTerminal::new("main"),
-            setup_terminal: CloudTerminal::new("setup"),
-            group_setup_terminal: CloudTerminal::new("group-setup")
+            main_terminal: Terminal::new("main"),
+            setup_terminal: Terminal::new("setup"),
+            group_setup_terminal: Terminal::new("group-setup")
         }
     }
 

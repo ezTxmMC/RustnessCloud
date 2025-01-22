@@ -5,13 +5,13 @@ use crossterm::{
 };
 use std::io::{self, Write};
 
-pub struct CloudTerminal {
+pub struct Terminal {
     pub name: String,
 }
 
-impl CloudTerminal {
-    pub fn new(name: &str) -> CloudTerminal {
-        CloudTerminal {
+impl Terminal {
+    pub fn new(name: &str) -> Terminal {
+        Terminal {
             name: name.to_string(),
         }
     }
@@ -35,7 +35,7 @@ impl CloudTerminal {
         execute!(io::stdout(), Clear(ClearType::All), MoveTo(0, 0));
     }
 
-    pub fn get_current_terminal(&self) -> &CloudTerminal {
+    pub fn get_current_terminal(&self) -> &Terminal {
         self
     }
 }
