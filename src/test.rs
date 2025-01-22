@@ -5,7 +5,7 @@ async fn main() {
     
 }
 
-/*fn main() {
+fn main() {
     let keep_running = Arc::new(AtomicBool::new(true));
 
     task::block_on(async {
@@ -114,4 +114,4 @@ fn start_terminal(jar_file_name: &str, working_dir: &str, keep_running: Arc<Atom
         }
         keep_running.store(false, Ordering::Relaxed);
     });
-}*/
+}

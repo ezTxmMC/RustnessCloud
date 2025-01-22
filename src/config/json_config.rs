@@ -1,4 +1,4 @@
-use serde_json::{Map, Value};
+use serde_json::{Map, Number, Value};
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
@@ -42,9 +42,21 @@ impl JsonConfig {
         }
     }
 
-    pub fn set(&mut self, key: &str, value: String) {
+    pub fn set_string(&mut self, key: &str, value: String) {
         self.json_object
             .insert(key.to_string(), serde_json::Value::String(value));
+        self.save();
+    }
+
+    pub fn set_integer(&mut self, key: &str, value: Number) {
+        self.json_object
+            .insert(key.to_string(), serde_json::Value::Number(value));
+        self.save();
+    }
+
+    pub fn set_boolean(&mut self, key: &str, value: bool) {
+        self.json_object
+            .insert(key.to_string(), serde_json::Value::Bool(value));
         self.save();
     }
 
@@ -57,16 +69,28 @@ impl JsonConfig {
         self.json_object.get(key)
     }
 
-    pub fn add_default(&mut self, key: &str, value: String) {
+    pub fn add_default_string(&mut self, key: &str, value: String) {
         if self.get(key).is_none() {
-            self.set(key, value);
+            self.set_string(key, value);
+        }
+    }
+    
+    pub fn add_default_integer(&mut self, key: &str, value: Number) {
+        if self.get(key).is_none() {
+            self.set_integer(key, value);
+        }
+    }
+    
+    pub fn add_default_boolean(&mut self, key: &str, value: bool) {
+        if self.get(key).is_none() {
+            self.set_boolean(key, value);
         }
     }
 
     fn save(&self) {
         let full_path = format!("{}/{}", self.config_path, self.config_name);
         let json_string =
-            serde_json::to_string(&self.json_object).expect("Failed to serialize JSON");
+            serde_json::to_string_pretty(&self.json_object).expect("Failed to serialize JSON");
         let mut file = File::create(&full_path).expect("Failed to open config file for writing");
         file.write_all(json_string.as_bytes())
             .expect("Failed to write JSON to file");

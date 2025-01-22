@@ -1,5 +1,5 @@
 use crate::downloader::url_downloader;
-use crate::groups::grouptypes::SupportedVersions;
+use crate::group::grouptypes::SupportedVersions;
 
 async fn download_paper(supported_versions: SupportedVersions) {
     let name = "paper.jar";
