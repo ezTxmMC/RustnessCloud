@@ -1,3 +1,4 @@
-/target
-/_test
+target/
+_test/
+.idea/
 *.lock

@@ -1,5 +1,5 @@
 if [ "$EUID" -ne 0 ]; then
-    echo "Please run as root"
+    echo "Please run as root or sudoers."
     exit 1
 fi
 
