@@ -1,15 +1,15 @@
-enum ServiceType {
+pub(crate) enum ServiceType {
     PROXY,
     LOBBY,
     SERVER
 }
 
-enum ProxySoftwareType {
+pub(crate) enum ProxySoftwareType {
     BUNGEECORD,
     VELOCITY
 }
 
-enum ServerSoftwareType {
+pub(crate) enum ServerSoftwareType {
     SPIGOT,
     PAPER,
     PURPUR,
@@ -17,7 +17,7 @@ enum ServerSoftwareType {
     MINESTOM
 }
 
-enum SupportedVersions {
+pub(crate) enum SupportedVersions {
     V1_19_4,
     V1_20_1,
     V1_20_4,
@@ -25,7 +25,7 @@ enum SupportedVersions {
     V1_21_1
 }
 
-enum StoreType {
+pub(crate) enum StoreType {
     PERMANENTLY,
     TEMPORARY
 }

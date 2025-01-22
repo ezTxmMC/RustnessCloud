@@ -2,3 +2,4 @@ target/
 _test/
 .idea/
 *.lock
+data/

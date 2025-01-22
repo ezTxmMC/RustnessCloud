@@ -66,7 +66,7 @@ async fn main() {
             let working_dir_clone = working_dir.clone();
             let keep_running_clone = Arc::clone(&keep_running);
             let handle = thread::spawn(move || {
-                start(&jar_file_name_clone, &working_dir_clone, keep_running_clone);
+                start_terminal(&jar_file_name_clone, &working_dir_clone, keep_running_clone);
             });
 
             // Warte auf Benutzereingabe für den Stop-Befehl
@@ -93,7 +93,7 @@ async fn main() {
     });
 }
 
-fn start(jar_file_name: &str, working_dir: &str, keep_running: Arc<AtomicBool>) {
+fn start_terminal(jar_file_name: &str, working_dir: &str, keep_running: Arc<AtomicBool>) {
     let mut cmd = Command::new("java");
     cmd.arg("-jar")
         .arg(jar_file_name)

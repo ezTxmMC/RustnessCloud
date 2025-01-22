@@ -1,7 +1,7 @@
-fn createPermanentlyService() {
+fn create_permanently_service() {
     
 }
 
-fn createTemporaryService() {
+fn create_temporary_service() {
 
 }

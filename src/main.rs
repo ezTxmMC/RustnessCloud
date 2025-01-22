@@ -1,84 +1,23 @@
-mod cloud_terminal;
+mod terminal {
+    pub(crate) mod cloud_terminal;
+    pub(crate) mod terminal_manager;
+}
 mod database;
-mod json_config;
+mod config {
+    pub(crate) mod json_config;
+}
+mod service;
 
-use cloud_terminal::CloudTerminal;
-use json_config::JsonConfig;
+mod groups {
+    mod group;
+    mod grouptypes;
+}
+
+use terminal::terminal_manager::TerminalManager;
+use config::json_config::JsonConfig;
 
 fn main() {
-    let mut config = JsonConfig::new("data", "launch");
-
-    let main_terminal = CloudTerminal::new("main");
-    let setup_terminal = CloudTerminal::new("setup");
-    let group_setup_terminal = CloudTerminal::new("group-setup");
-
-    let mut current_terminal = main_terminal.get_current_terminal();
-
-    let need_setup = !config.get("Host").is_some();
-    let mut setup_step = 0;
-
-    if need_setup {
-        current_terminal = setup_terminal.get_current_terminal();
-        current_terminal.writeline("On which ip addresse should run the cloud?");
-    }
-
-    current_terminal.clear();
-
-    loop {
-        let input = current_terminal.readline();
-        let current_terminal_name = current_terminal.name.as_str();
-
-        match current_terminal_name {
-            "main" => {
-                if input == "clear" || input == "cls" {
-                    current_terminal.clear();
-                    continue;
-                }
-                if input == "shutdown" {
-                    break;
-                }
-            }
-            "setup" => {
-                match setup_step {
-                    0 => {
-                        config.set("Host", input.clone());
-                        current_terminal.writeline("On which port should run the cloud?");
-                        setup_step += 1;
-                        continue;
-                    }
-                    1 => {
-                        config.set("Port", input.clone());
-                        current_terminal.writeline("How many memory should use the cloud? (in GB)");
-                        setup_step += 1;
-                        continue;
-                    }
-                    2 => {
-                        config.set("Memory", input.clone());
-                        current_terminal.clear();
-                        current_terminal = main_terminal.get_current_terminal();
-                        setup_step += 1;
-                        continue;
-                    }
-                    _ => {
-                        current_terminal
-                            .writeline("Setup has been cancelled caused an unknown error.");
-                        break;
-                    }
-                }
-            }
-            "group-setup" => {}
-            _ => {
-                if current_terminal_name.starts_with("service-") {
-                    if input == "leave" {
-                        current_terminal = main_terminal.get_current_terminal();
-                        continue;
-                    }
-                    // TODO: Send Command into java application in terminal
-                    continue;
-                }
-                current_terminal.writeline("Unknown terminal.");
-            }
-        }
-        current_terminal.writeline(&format!("Unknown command: {}", input));
-    }
+    let config: JsonConfig = JsonConfig::new("data", "launch");
+    let mut terminal_manager: TerminalManager = TerminalManager::new(config);
+    terminal_manager.start_terminal();
 }

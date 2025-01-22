@@ -27,7 +27,7 @@ impl CloudTerminal {
         input.trim().to_string()
     }
 
-    pub fn writeline(&self, message: &str) {
+    pub fn write_line(&self, message: &str) {
         println!("{}", message);
     }
 
