@@ -4,6 +4,7 @@ use serde_json::Number;
 use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
 use crate::downloader::software_downloader;
+use crate::group::group;
 
 pub struct TerminalManager {
     pub(crate) launch_config: JsonConfig,
@@ -68,22 +69,7 @@ impl TerminalManager {
                                                 current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <maintenance> <permission>");
                                                 continue;
                                             }
-                                            let mut group_file = JsonConfig::new("groups/proxies", args[2]);
-                                            group_file.set_string("name", args[2].to_string());
-                                            group_file.set_string("templateName", args[2].to_string());
-                                            group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumMemory", args[4].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
-                                            group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
-                                            group_file.set_string("software", args[7].to_string());
-                                            group_file.set_string("version", args[8].to_string());
-                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
-                                            group_file.set_boolean("maintenance", if (args[11].to_string() == "yes") { true } else { false });
-                                            group_file.set_string("permission", args[12].to_string());
-                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
-                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
-                                            }
+                                            group::create_proxy_group();
                                             current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
                                             continue;
                                         }

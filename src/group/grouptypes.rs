@@ -15,8 +15,3 @@ pub(crate) enum ServerSoftwareType {
     FOLIA,
     MINESTOM
 }
-
-pub(crate) enum StoreType {
-    PERMANENTLY,
-    TEMPORARY
-}
