@@ -3,6 +3,7 @@ use std::path::Path;
 use serde_json::Number;
 use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
+use crate::downloader::software_downloader;
 
 pub struct TerminalManager {
     pub(crate) launch_config: JsonConfig,
@@ -23,7 +24,7 @@ impl TerminalManager {
         }
     }
 
-    pub fn start_terminal(&mut self) {
+    pub async fn start_terminal(&mut self) {
         let mut current_terminal = self.main_terminal.get_current_terminal();
 
         let need_setup = !self.launch_config.get("Host").is_some();
@@ -63,8 +64,8 @@ impl TerminalManager {
                                 "group" => {
                                     match args[1] {
                                         "proxy" => {
-                                            if args.len() < 12 {
-                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <maintenance> <permission>");
+                                            if args.len() < 13 {
+                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <maintenance> <permission>");
                                                 continue;
                                             }
                                             let mut group_file = JsonConfig::new("groups/proxies", args[2]);
@@ -75,10 +76,11 @@ impl TerminalManager {
                                             group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
                                             group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
                                             group_file.set_string("software", args[7].to_string());
-                                            group_file.set_integer("priority", args[8].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[9].parse::<Number>().unwrap());
-                                            group_file.set_boolean("maintenance", if (args[10].to_string() == "yes") { true } else { false });
-                                            group_file.set_string("permission", args[11].to_string());
+                                            group_file.set_string("version", args[8].to_string());
+                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
+                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
+                                            group_file.set_boolean("maintenance", if (args[11].to_string() == "yes") { true } else { false });
+                                            group_file.set_string("permission", args[12].to_string());
                                             if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
                                                 fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
                                             }
@@ -86,8 +88,8 @@ impl TerminalManager {
                                             continue;
                                         }
                                         "lobby" => {
-                                            if args.len() < 15 {
-                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                            if args.len() < 16 {
+                                                current_terminal.write_line("create group lobby <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
                                                 continue;
                                             }
                                             let mut group_file = JsonConfig::new("groups/lobbies", args[2]);
@@ -98,25 +100,27 @@ impl TerminalManager {
                                             group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
                                             group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
                                             group_file.set_string("software", args[7].to_string());
-                                            group_file.set_integer("priority", args[8].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[9].parse::<Number>().unwrap());
-                                            group_file.set_string("permission", args[10].to_string());
-                                            group_file.set_string("java", args[11].to_string());
-                                            group_file.set_integer("newServiceProcent", args[12].parse::<Number>().unwrap());
-                                            group_file.set_integer("minimumOnlineCount", args[13].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            group_file.set_string("version", args[8].to_string());
+                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
+                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
+                                            group_file.set_string("permission", args[11].to_string());
+                                            group_file.set_string("java", args[12].to_string());
+                                            group_file.set_integer("newServiceProcent", args[13].parse::<Number>().unwrap());
+                                            group_file.set_integer("minimumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumOnlineCount", args[15].parse::<Number>().unwrap());
                                             if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
                                                 fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
                                             }
+                                            let _ = software_downloader::download_paper(args[8].to_string()).await;
                                             current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
                                             continue;
                                         }
                                         "server" => {
-                                            if args.len() < 15 {
-                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                            if args.len() < 16 {
+                                                current_terminal.write_line("create group server <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
                                                 continue;
                                             }
-                                            let mut group_file = JsonConfig::new("groups/servers", args[2]);
+                                            let mut group_file = JsonConfig::new("groups/lobbies", args[2]);
                                             group_file.set_string("name", args[2].to_string());
                                             group_file.set_string("templateName", args[2].to_string());
                                             group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
@@ -124,13 +128,14 @@ impl TerminalManager {
                                             group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
                                             group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
                                             group_file.set_string("software", args[7].to_string());
-                                            group_file.set_integer("priority", args[8].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[9].parse::<Number>().unwrap());
-                                            group_file.set_string("permission", args[10].to_string());
-                                            group_file.set_string("java", args[11].to_string());
-                                            group_file.set_integer("newServiceProcent", args[12].parse::<Number>().unwrap());
-                                            group_file.set_integer("minimumOnlineCount", args[13].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            group_file.set_string("version", args[8].to_string());
+                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
+                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
+                                            group_file.set_string("permission", args[11].to_string());
+                                            group_file.set_string("java", args[12].to_string());
+                                            group_file.set_integer("newServiceProcent", args[13].parse::<Number>().unwrap());
+                                            group_file.set_integer("minimumOnlineCount", args[14].parse::<Number>().unwrap());
+                                            group_file.set_integer("maximumOnlineCount", args[15].parse::<Number>().unwrap());
                                             if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
                                                 fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
                                             }

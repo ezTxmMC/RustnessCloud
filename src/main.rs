@@ -26,8 +26,9 @@ mod service {
 use terminal::terminal_manager::TerminalManager;
 use config::json_config::JsonConfig;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let config: JsonConfig = JsonConfig::new(".", "launch");
     let mut terminal_manager: TerminalManager = TerminalManager::new(config);
-    terminal_manager.start_terminal();
+    terminal_manager.start_terminal().await;
 }
