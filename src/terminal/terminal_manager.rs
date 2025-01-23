@@ -1,10 +1,7 @@
-use std::fs;
-use std::path::Path;
-use serde_json::Number;
 use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
-use crate::downloader::software_downloader;
 use crate::group::group;
+use serde_json::Number;
 
 pub struct TerminalManager {
     pub(crate) launch_config: JsonConfig,
@@ -14,14 +11,13 @@ pub struct TerminalManager {
 }
 
 impl TerminalManager {
-    
     pub fn new(launch_config: JsonConfig) -> Self {
         let launch_config = launch_config;
         Self {
             launch_config,
             main_terminal: Terminal::new("main"),
             setup_terminal: Terminal::new("setup"),
-            group_setup_terminal: Terminal::new("group-setup")
+            group_setup_terminal: Terminal::new("group-setup"),
         }
     }
 
@@ -54,100 +50,128 @@ impl TerminalManager {
                         "create" => {
                             // create group lobby
                             if args.len() < 2 {
-                                current_terminal.write_line("\
+                                current_terminal.write_line(
+                                    "\
                                 create group proxy\n\
                                 create group lobby\n\
-                                create group server"
+                                create group server",
                                 );
                                 continue;
                             }
                             match args[0] {
-                                "group" => {
-                                    match args[1] {
-                                        "proxy" => {
-                                            if args.len() < 13 {
-                                                current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <maintenance> <permission>");
-                                                continue;
-                                            }
-                                            group::create_proxy_group();
-                                            current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
+                                "group" => match args[1] {
+                                    "proxy" => {
+                                        if args.len() < 13 {
+                                            current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <maintenance> <permission>");
                                             continue;
                                         }
-                                        "lobby" => {
-                                            if args.len() < 16 {
-                                                current_terminal.write_line("create group lobby <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
-                                                continue;
-                                            }
-                                            let mut group_file = JsonConfig::new("groups/lobbies", args[2]);
-                                            group_file.set_string("name", args[2].to_string());
-                                            group_file.set_string("templateName", args[2].to_string());
-                                            group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumMemory", args[4].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
-                                            group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
-                                            group_file.set_string("software", args[7].to_string());
-                                            group_file.set_string("version", args[8].to_string());
-                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
-                                            group_file.set_string("permission", args[11].to_string());
-                                            group_file.set_string("java", args[12].to_string());
-                                            group_file.set_integer("newServiceProcent", args[13].parse::<Number>().unwrap());
-                                            group_file.set_integer("minimumOnlineCount", args[14].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumOnlineCount", args[15].parse::<Number>().unwrap());
-                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
-                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
-                                            }
-                                            let _ = software_downloader::download_paper(args[8].to_string()).await;
-                                            current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
-                                            continue;
-                                        }
-                                        "server" => {
-                                            if args.len() < 16 {
-                                                current_terminal.write_line("create group server <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
-                                                continue;
-                                            }
-                                            let mut group_file = JsonConfig::new("groups/lobbies", args[2]);
-                                            group_file.set_string("name", args[2].to_string());
-                                            group_file.set_string("templateName", args[2].to_string());
-                                            group_file.set_integer("minimumMemory", args[3].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumMemory", args[4].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumPlayers", args[5].parse::<Number>().unwrap());
-                                            group_file.set_boolean("static", if (args[6].to_string() == "yes") { true } else { false });
-                                            group_file.set_string("software", args[7].to_string());
-                                            group_file.set_string("version", args[8].to_string());
-                                            group_file.set_integer("priority", args[9].parse::<Number>().unwrap());
-                                            group_file.set_integer("port", args[10].parse::<Number>().unwrap());
-                                            group_file.set_string("permission", args[11].to_string());
-                                            group_file.set_string("java", args[12].to_string());
-                                            group_file.set_integer("newServiceProcent", args[13].parse::<Number>().unwrap());
-                                            group_file.set_integer("minimumOnlineCount", args[14].parse::<Number>().unwrap());
-                                            group_file.set_integer("maximumOnlineCount", args[15].parse::<Number>().unwrap());
-                                            if !Path::new(format!("templates/ {}", args[2]).as_str()).exists() {
-                                                fs::create_dir_all(format!("templates/ {}", args[2]).as_str()).expect("Failed to create template directory");
-                                            }
-                                            current_terminal.write_line(format!("Created group {}.", args[2]).as_str());
-                                            continue;
-                                        }
-                                        _ => {
-                                            current_terminal.write_line(format!("Group {} type doesn't exist.", args[0]).as_str());
-                                        }
+                                        group::create_proxy_group(
+                                            args[2],
+                                            args[3].parse::<Number>().unwrap(),
+                                            args[4].parse::<Number>().unwrap(),
+                                            args[5].parse::<Number>().unwrap(),
+                                            if args[6].to_lowercase() == "yes" {
+                                                true
+                                            } else {
+                                                false
+                                            },
+                                            args[7].to_string(),
+                                            args[8].to_string(),
+                                            args[9].parse::<Number>().unwrap(),
+                                            args[10].parse::<Number>().unwrap(),
+                                            if args[11].to_lowercase() == "yes" {
+                                                true
+                                            } else {
+                                                false
+                                            },
+                                            args[12].to_string(),
+                                        );
+                                        current_terminal.write_line(
+                                            format!("Created group {}.", args[2]).as_str(),
+                                        );
+                                        continue;
                                     }
-                                }
+                                    "lobby" => {
+                                        if args.len() < 16 {
+                                            current_terminal.write_line("create group lobby <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                            continue;
+                                        }
+                                        group::create_lobby_group(
+                                            args[2],
+                                            args[3].parse::<Number>().unwrap(),
+                                            args[4].parse::<Number>().unwrap(),
+                                            args[5].parse::<Number>().unwrap(),
+                                            if args[6].to_lowercase() == "yes" {
+                                                true
+                                            } else {
+                                                false
+                                            },
+                                            args[7].to_string(),
+                                            args[8].to_string(),
+                                            args[9].parse::<Number>().unwrap(),
+                                            args[10].parse::<Number>().unwrap(),
+                                            args[11].to_string(),
+                                            args[12].to_string(),
+                                            args[13].parse::<Number>().unwrap(),
+                                            args[14].parse::<Number>().unwrap(),
+                                            args[15].parse::<Number>().unwrap(),
+                                        );
+                                        current_terminal.write_line(
+                                            format!("Created group {}.", args[2]).as_str(),
+                                        );
+                                        continue;
+                                    }
+                                    "server" => {
+                                        if args.len() < 16 {
+                                            current_terminal.write_line("create group server <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
+                                            continue;
+                                        }
+                                        group::create_server_group(
+                                            args[2],
+                                            args[3].parse::<Number>().unwrap(),
+                                            args[4].parse::<Number>().unwrap(),
+                                            args[5].parse::<Number>().unwrap(),
+                                            if args[6].to_lowercase() == "yes" {
+                                                true
+                                            } else {
+                                                false
+                                            },
+                                            args[7].to_string(),
+                                            args[8].to_string(),
+                                            args[9].parse::<Number>().unwrap(),
+                                            args[10].parse::<Number>().unwrap(),
+                                            args[11].to_string(),
+                                            args[12].to_string(),
+                                            args[13].parse::<Number>().unwrap(),
+                                            args[14].parse::<Number>().unwrap(),
+                                            args[15].parse::<Number>().unwrap(),
+                                        );
+                                        current_terminal.write_line(
+                                            format!("Created group {}.", args[2]).as_str(),
+                                        );
+                                        continue;
+                                    }
+                                    _ => {
+                                        current_terminal.write_line(
+                                            format!("Group {} type doesn't exist.", args[0])
+                                                .as_str(),
+                                        );
+                                    }
+                                },
                                 _ => {
-                                    current_terminal.write_line(format!("{} doesn't exist.", args[0]).as_str());
+                                    current_terminal
+                                        .write_line(format!("{} doesn't exist.", args[0]).as_str());
                                     continue;
                                 }
                             }
                         }
-                        "delete" => {
-
-                        }
+                        "delete" => {}
                         "shutdown" | "exit" | "quit" | "stop" => {
                             break;
                         }
                         _ => {
                             current_terminal.write_line(&format!("Unknown command: {}", input));
-                        continue;
+                            continue;
                         }
                     }
                 }
@@ -159,22 +183,25 @@ impl TerminalManager {
                         continue;
                     }
                     1 => {
-                        self.launch_config.set_integer("Port", input.clone().parse::<Number>().unwrap());
+                        self.launch_config
+                            .set_integer("Port", input.clone().parse::<Number>().unwrap());
                         current_terminal
                             .write_line("How many memory should use the cloud? (in MB)");
                         setup_step += 1;
                         continue;
                     }
                     2 => {
-                        self.launch_config.set_integer("Memory", input.clone().parse::<Number>().unwrap());
-                        current_terminal
-                            .write_line("Do you agree with the minecraft eula?? (yes)");
+                        self.launch_config
+                            .set_integer("Memory", input.clone().parse::<Number>().unwrap());
+                        current_terminal.write_line("Do you agree with the minecraft eula?? (yes)");
                         setup_step += 1;
                         continue;
                     }
                     3 => {
                         if (input.clone() != "yes") {
-                            current_terminal.write_line("You must agree with the minecraft eula to use this cloud.");
+                            current_terminal.write_line(
+                                "You must agree with the minecraft eula to use this cloud.",
+                            );
                             continue;
                         }
                         self.launch_config.set_boolean("Eula", true);

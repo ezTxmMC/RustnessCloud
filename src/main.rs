@@ -17,7 +17,6 @@ mod downloader {
 }
 mod group {
     pub(crate) mod group;
-    pub(crate) mod grouptypes;
 }
 mod service {
     pub(crate) mod service;
