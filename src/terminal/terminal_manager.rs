@@ -2,6 +2,7 @@ use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
 use crate::group::group;
 use serde_json::Number;
+use crate::downloader::software_downloader;
 
 pub struct TerminalManager {
     pub(crate) launch_config: JsonConfig,
@@ -86,6 +87,7 @@ impl TerminalManager {
                                             },
                                             args[12].to_string(),
                                         );
+                                        let _ = software_downloader::download("PROXY".to_string(), args[7].to_uppercase(), args[8].to_string()).await;
                                         current_terminal.write_line(
                                             format!("Created group {}.", args[2]).as_str(),
                                         );
@@ -116,6 +118,7 @@ impl TerminalManager {
                                             args[14].parse::<Number>().unwrap(),
                                             args[15].parse::<Number>().unwrap(),
                                         );
+                                        let _ = software_downloader::download("SERVER".to_string(), args[7].to_uppercase(), args[8].to_string()).await;
                                         current_terminal.write_line(
                                             format!("Created group {}.", args[2]).as_str(),
                                         );
@@ -146,6 +149,7 @@ impl TerminalManager {
                                             args[14].parse::<Number>().unwrap(),
                                             args[15].parse::<Number>().unwrap(),
                                         );
+                                        let _ = software_downloader::download("SERVER".to_string(), args[7].to_uppercase(), args[8].to_string()).await;
                                         current_terminal.write_line(
                                             format!("Created group {}.", args[2]).as_str(),
                                         );

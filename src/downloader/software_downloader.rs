@@ -1,30 +1,33 @@
-use anyhow::{anyhow, Error};
-use serde::Deserialize;
+use anyhow::{anyhow, Context, Error};
+use reqwest::header::CACHE_CONTROL;
 use crate::downloader::url_downloader;
+use crate::group::groupversion::{get_all_versions, get_url, software_and_version_exist, Manifest};
 
-// Lädt die neueste Version von Paper herunter
-pub(crate) async fn download_paper(version: String) -> Result<(), Error> {
-    let name = format!("paper-{}.jar", version.replace("_", "."));
-    let url = "https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/121/downloads/paper-1.21.4-121.jar";
-    url_downloader::download(&name, &url).await.map_err(|e| anyhow!("Download fehlgeschlagen: {}", e))?;
-    Ok(())
+pub(crate) async fn download(software_type: String, software: String, version: String) -> Result<(), Error> {
+    println!("{} - {}_{}", software, software, version);
+    let manifest = get_manifest().await.context("Fehler beim Abrufen des Manifests")?;
+    println!("{} - {:?}", software, get_all_versions(&manifest, &software_type, &software));
+    if software_and_version_exist(&manifest, &software_type, &software, &version) {
+        println!("{} is existing.", &software);
+        let name = format!("{}-{}.jar", software.to_lowercase(), version.replace("_", "."));
+        let url = get_url(&manifest, &software_type, &software, &version).unwrap();
+        println!("{} - {}", name, url);
+        url_downloader::download(&name, &url).await.map_err(|e| anyhow!("Download fehlgeschlagen: {}", e))?;
+        return Ok(());
+    }
+    Err(anyhow!("{} version {} not found", software, version))
 }
 
-// Lädt die neueste Version von Purpur herunter
-pub(crate) async fn download_purpur(version: String) -> Result<(), Error> {
-    let name = format!("purpur-{}.jar", version);
-    let url = "https://api.purpurmc.org/v2/purpur/1.20.6/2207/download";
-
-    url_downloader::download(&name, url).await.map_err(|e| anyhow!("Download fehlgeschlagen: {}", e))?;
-    Ok(())
+async fn get_manifest() -> Result<Manifest, Error> {
+    let url = "https://raw.githubusercontent.com/ezTxmMC/rustnesscloud-manifest/refs/heads/master/versions.json";
+    let client = reqwest::Client::new();
+    let response = client
+        .get(url)
+        .header(CACHE_CONTROL, "no-cache")
+        .send()
+        .await?
+        .text()
+        .await?;
+    let manifest: Manifest = serde_json::from_str(&response)?;
+    Ok(manifest)
 }
-
-// Lädt die neueste Version von Folia herunter
-pub(crate) async fn download_folia(version: String) -> Result<(), Error> {
-    let name = format!("folia-{}.jar", version);
-    let url = "https://api.papermc.io/v2/projects/folia/versions/1.20.6/builds/5/downloads/folia-1.20.6-5.jar";
-
-    url_downloader::download(&name, url).await.map_err(|e| anyhow!("Download fehlgeschlagen: {}", e))?;
-    Ok(())
-}
-
