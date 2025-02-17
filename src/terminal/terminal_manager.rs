@@ -197,7 +197,7 @@ impl TerminalManager {
                     2 => {
                         self.launch_config
                             .set_integer("Memory", input.clone().parse::<Number>().unwrap());
-                        current_terminal.write_line("Do you agree with the minecraft eula?? (yes)");
+                        current_terminal.write_line("Do you agree with the minecraft eula? (yes/no)");
                         setup_step += 1;
                         continue;
                     }

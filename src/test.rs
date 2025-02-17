@@ -1,10 +1,3 @@
-mod downloader;
-
-#[tokio::main]
-async fn main() {
-    
-}
-
 fn main() {
     let keep_running = Arc::new(AtomicBool::new(true));
 
