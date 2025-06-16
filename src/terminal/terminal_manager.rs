@@ -1,3 +1,5 @@
+use std::net::ToSocketAddrs;
+use std::ptr::null;
 use super::terminal::Terminal;
 use crate::config::json_config::JsonConfig;
 use crate::group::group;
@@ -66,6 +68,11 @@ impl TerminalManager {
                                             current_terminal.write_line("create group proxy <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <maintenance> <permission>");
                                             continue;
                                         }
+                                        let permission = if args[12].to_lowercase() == "none" {
+                                            None
+                                        } else {
+                                            Some(args[12].to_lowercase())
+                                        };
                                         group::create_proxy_group(
                                             args[2],
                                             args[3].parse::<Number>().unwrap(),
@@ -85,7 +92,7 @@ impl TerminalManager {
                                             } else {
                                                 false
                                             },
-                                            args[12].to_string(),
+                                            permission.unwrap(),
                                         );
                                         let _ = software_downloader::download("PROXY".to_string(), args[7].to_uppercase(), args[8].to_string()).await;
                                         current_terminal.write_line(
@@ -98,6 +105,11 @@ impl TerminalManager {
                                             current_terminal.write_line("create group lobby <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
                                             continue;
                                         }
+                                        let permission = if args[12].to_lowercase() == "none" {
+                                            None
+                                        } else {
+                                            Some(args[12].to_lowercase())
+                                        };
                                         group::create_lobby_group(
                                             args[2],
                                             args[3].parse::<Number>().unwrap(),
@@ -113,7 +125,7 @@ impl TerminalManager {
                                             args[9].parse::<Number>().unwrap(),
                                             args[10].parse::<Number>().unwrap(),
                                             args[11].to_string(),
-                                            args[12].to_string(),
+                                            permission.unwrap(),
                                             args[13].parse::<Number>().unwrap(),
                                             args[14].parse::<Number>().unwrap(),
                                             args[15].parse::<Number>().unwrap(),
@@ -129,6 +141,11 @@ impl TerminalManager {
                                             current_terminal.write_line("create group server <name> <minMem> <maxMem> <maxPlayers> <static> <software> <version> <priority> <port> <permission> <java> <newServiceProcent> <minOnlineCount> <maxOnlineCount>");
                                             continue;
                                         }
+                                        let permission = if args[12].to_lowercase() == "none" {
+                                            None
+                                        } else {
+                                            Some(args[12].to_lowercase())
+                                        };
                                         group::create_server_group(
                                             args[2],
                                             args[3].parse::<Number>().unwrap(),
@@ -144,7 +161,7 @@ impl TerminalManager {
                                             args[9].parse::<Number>().unwrap(),
                                             args[10].parse::<Number>().unwrap(),
                                             args[11].to_string(),
-                                            args[12].to_string(),
+                                            permission.unwrap(),
                                             args[13].parse::<Number>().unwrap(),
                                             args[14].parse::<Number>().unwrap(),
                                             args[15].parse::<Number>().unwrap(),

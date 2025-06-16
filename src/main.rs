@@ -12,7 +12,6 @@ mod database {
 }
 mod downloader {
     pub(crate) mod url_downloader;
-    pub(crate) mod proxy_downloader;
     pub(crate) mod software_downloader;
 }
 mod group {
