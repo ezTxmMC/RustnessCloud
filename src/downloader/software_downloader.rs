@@ -19,7 +19,7 @@ pub(crate) async fn download(software_type: String, software: String, version: S
 }
 
 async fn get_manifest() -> Result<Manifest, Error> {
-    let url = "https://raw.githubusercontent.com/ezTxmMC/rustnesscloud-manifest/refs/heads/master/versions.json";
+    let url = "https://raw.githubusercontent.com/ezTxmMC/rustnesscloud-manifest/refs/heads/master/serviceVersions.json";
     let client = reqwest::Client::new();
     let response = client
         .get(url)
